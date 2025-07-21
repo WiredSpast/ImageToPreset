@@ -338,8 +338,6 @@ document.getElementById('file').onchange = function (evt) {
               let pos_z = 0;
               let rot = ROTATIONS[x % 2][y % 2];
 
-              console.log(`#${block.color[0].toString(16).padStart(2, '0')}${block.color[1].toString(16).padStart(2, '0')}${block.color[2].toString(16).padStart(2, '0')}`);
-
               CTX_NEW.fillStyle = `#${block.color[0].toString(16).padStart(2, '0')}${block.color[1].toString(16).padStart(2, '0')}${block.color[2].toString(16).padStart(2, '0')}`;
               CTX_NEW.fillRect(x, y, 1, 1);
 

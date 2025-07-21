@@ -288,15 +288,16 @@ const CTX = CANVAS.getContext("2d");
 let name = "preset";
 
 function findNearestBlock(c) {
-  let minDist = 255 * 3
+  let minDist = (255 ** 2) * 3
   let minBlock = {
     'color': [255, 255, 255],
     'id': 14,
   };
 
   for (let b of BLOCKS) {
-    let dist =  (b[0] - c[0]) ** 2 + (b[1] - c[1]) ** 2 + (b[2] - c[2]) ** 2;
+    let dist =  (b['color'][0] - c[0]) ** 2 + (b['color'][1] - c[1]) ** 2 + (b['color'][2] - c[2]) ** 2;
     if (dist < minDist) {
+      minDist = dist;
       minBlock = b;
     }
   }
@@ -331,6 +332,8 @@ document.getElementById('file').onchange = function (evt) {
               let pos_y = Math.floor(y / 2);
               let pos_z = 0;
               let rot = ROTATIONS[x % 2][y % 2];
+
+              console.log(block);
 
               placing.push({
                 'rotation': rot,

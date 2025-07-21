@@ -284,19 +284,22 @@ const ROTATIONS = [[0, 1], [2, 3]];
 const PRESET = document.getElementById('preset');
 const CANVAS = document.getElementById('canvas');
 const CTX = CANVAS.getContext("2d");
+const CANVAS_NEW = document.getElementById('canvas_new_colours');
+const CTX_NEW = CANVAS_NEW.getContext("2d");
 
 let name = "preset";
 
 function findNearestBlock(c) {
-  let minDist = 255 * 3
+  let minDist = (255 ** 2) * 3
   let minBlock = {
     'color': [255, 255, 255],
     'id': 14,
   };
 
   for (let b of BLOCKS) {
-    let dist =  (b[0] - c[0]) ** 2 + (b[1] - c[1]) ** 2 + (b[2] - c[2]) ** 2;
+    let dist =  (b['color'][0] - c[0]) ** 2 + (b['color'][1] - c[1]) ** 2 + (b['color'][2] - c[2]) ** 2;
     if (dist < minDist) {
+      minDist = dist;
       minBlock = b;
     }
   }
@@ -315,8 +318,11 @@ document.getElementById('file').onchange = function (evt) {
       image.onload = function() {
         let placing = [];
         CTX.clearRect(0, 0, CANVAS.width, CANVAS.height)
+        CTX_NEW.clearRect(0, 0, CANVAS_NEW.width, CANVAS_NEW.height)
         CANVAS.width = image.width;
         CANVAS.height = image.height;
+        CANVAS_NEW.width = image.width;
+        CANVAS_NEW.height = image.height;
         CTX.drawImage(image, 0, 0);
 
         let imgData = CTX.getImageData(0, 0, image.width, image.height);
@@ -331,6 +337,11 @@ document.getElementById('file').onchange = function (evt) {
               let pos_y = Math.floor(y / 2);
               let pos_z = 0;
               let rot = ROTATIONS[x % 2][y % 2];
+
+              console.log(`#${block.color[0].toString(16).padStart(2, '0')}${block.color[1].toString(16).padStart(2, '0')}${block.color[2].toString(16).padStart(2, '0')}`);
+
+              CTX_NEW.fillStyle = `#${block.color[0].toString(16).padStart(2, '0')}${block.color[1].toString(16).padStart(2, '0')}${block.color[2].toString(16).padStart(2, '0')}`;
+              CTX_NEW.fillRect(x, y, 1, 1);
 
               placing.push({
                 'rotation': rot,

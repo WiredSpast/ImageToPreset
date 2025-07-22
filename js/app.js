@@ -307,8 +307,43 @@ function findNearestBlock(c) {
   return minBlock;
 }
 
-document.getElementById('file').onchange = function (evt) {
-  let tgt = evt.target || window.event.srcElement, files = tgt.files;
+const POSITIONERS = {
+  'floor_0': {
+    'pos_x': (x, y) => Math.floor(x / 2),
+    'pos_y': (x, y, w) => Math.floor(y / 2),
+    'pos_z': (x, y, h) => 0,
+    'rot': (x, y) => ROTATIONS[x % 2][y % 2],
+    'state': '4',
+  },
+  'floor_1': {
+    'pos_x': (x, y) => Math.floor(y / 2),
+    'pos_y': (x, y, w) => Math.floor((w - x - 1) / 2),
+    'pos_z': (x, y, h) => 0,
+    'rot': (x, y) => ROTATIONS[y % 2][1 - x % 2],
+    'state': '4',
+  },
+  'wall_0': {
+    'pos_x': (x, y) => Math.floor(x / 2),
+    'pos_y': (x, y, w) => 0,
+    'pos_z': (x, y, h) => (h - y - 1) * 0.5 + (x % 2) * 0.01,
+    'rot': (x, y) => ROTATIONS[x % 2][0],
+    'state': '2',
+  },
+  'wall_1': {
+    'pos_x': (x, y) => 0,
+    'pos_y': (x, y, w) => Math.floor((w - x - 1) / 2),
+    'pos_z': (x, y, h) => (h - y - 1) * 0.5 + (1 - x % 2) * 0.01,
+    'rot': (x, y) => ROTATIONS[0][1 - x % 2],
+    'state': '2',
+  },
+};
+
+
+function updatePreset() {
+  let files = document.getElementById('file').files;
+  let positioner = POSITIONERS[document.getElementById('format').value]
+  if (files.length === 0)
+    return;
 
   if (FileReader && files && files.length) {
     let fr = new FileReader();
@@ -333,10 +368,11 @@ document.getElementById('file').onchange = function (evt) {
             let c = imgData.data.slice(index, index + 4);
             if (c[3] === 255) {
               let block = findNearestBlock(c);
-              let pos_x = Math.floor(x / 2);
-              let pos_y = Math.floor(y / 2);
-              let pos_z = 0;
-              let rot = ROTATIONS[x % 2][y % 2];
+              let pos_x = positioner.pos_x(x, y);
+              let pos_y = positioner.pos_y(x, y, image.width);
+              let pos_z = positioner.pos_z(x, y, image.height);
+              let rot = positioner.rot(x, y);
+              let state = positioner.state;
 
               CTX_NEW.fillStyle = `#${block.color[0].toString(16).padStart(2, '0')}${block.color[1].toString(16).padStart(2, '0')}${block.color[2].toString(16).padStart(2, '0')}`;
               CTX_NEW.fillRect(x, y, 1, 1);
@@ -351,7 +387,7 @@ document.getElementById('file').onchange = function (evt) {
                   'z': pos_z,
                 },
                 'id': placing.length,
-                'state': '4',
+                'state': state,
               });
             }
           }

@@ -16,7 +16,14 @@
   <div>
     <form>
       <label for="file">Select an image file:</label>
-      <input type="file" id="file" name="file" accept="image/png, image/gif">
+      <input type="file" id="file" name="file" accept="image/png, image/gif" oninput="updatePreset()">
+      <label for="format">Select format:</label>
+      <select name="format" id="format" oninput="updatePreset()">
+        <option value="floor_0">Floor right</option>
+        <option value="floor_1">Floor left</option>
+        <option value="wall_0">Wall right</option>
+        <option value="wall_1">Wall left</option>
+      </select>
     </form>
   </div>
   <canvas id="canvas"></canvas>
